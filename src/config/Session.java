@@ -1,7 +1,6 @@
 
 package config;
 
-
 public class Session {
     
     private static Session instance;
@@ -11,7 +10,11 @@ public class Session {
     private String username;
     private String acctype;
     private String status;
-    
+    private String contact;
+    private String pass;
+    private String sex;
+    private String image;
+
     private Session(){
          
     }
@@ -22,6 +25,14 @@ public class Session {
         }
         
         return instance;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     public static boolean isInstanceEmpty() {
@@ -75,5 +86,31 @@ public class Session {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+    
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+    
+    
 }
 

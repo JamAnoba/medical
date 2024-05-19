@@ -23,25 +23,26 @@ public class Welcomepage extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        signupbutton.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        signupbutton.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
+        signupbutton.setForeground(new java.awt.Color(255, 255, 255));
         signupbutton.setText("Sign Up");
         signupbutton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 signupbuttonMouseClicked(evt);
             }
         });
-        jPanel1.add(signupbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 210, 110, 40));
+        jPanel1.add(signupbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 380, 90, 40));
 
-        loginbutton.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        loginbutton.setFont(new java.awt.Font("Tahoma", 1, 21)); // NOI18N
         loginbutton.setText("Log In");
         loginbutton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 loginbuttonMouseClicked(evt);
             }
         });
-        jPanel1.add(loginbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 310, 100, 40));
+        jPanel1.add(loginbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 380, 70, 40));
 
-        welcomebg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/Blue and White 3D Modern Medical Thesis Defense Presentation.png"))); // NOI18N
+        welcomebg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/WELCOMEbg (1)_1.png"))); // NOI18N
         jPanel1.add(welcomebg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

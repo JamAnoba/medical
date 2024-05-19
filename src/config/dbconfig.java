@@ -16,12 +16,13 @@ public class dbconfig {
     
     public dbconfig(){
         try{
-            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/medapp", "root", "");
+            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/medico","root","");
         }catch(SQLException ex){
-            System.out.println("Can't connect to database: "+ex.getMessage());
+            System.out.println("Can't connect to database:"+ex.getMessage());  
         }
     }
-     
+ 
+    
      //Function to retrieve data
     public ResultSet getData(String sql) throws SQLException{
         Statement stmt = connect.createStatement();
@@ -44,27 +45,29 @@ public class dbconfig {
     }
     
     
-    public void updateData(String sql){
+    public boolean updateData(String sql){
         try{
             PreparedStatement pst = connect.prepareStatement(sql);  
             int rows = pst.executeUpdate();
-           
-                if(rows>0){
-                    JOptionPane.showMessageDialog(null,"Data Updated Successfully");        
-                }else{
-                    System.out.println("Update Failed");
-                }
-        }catch(SQLException ex){
-              System.out.println("Connection Error"+ex);
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(null, "Data Updated Successfully");
+                return true; 
+            }else {
+                System.out.println("Update Failed");
+                return false; 
+            }
+        }catch (SQLException ex) {
+            System.out.println("Connection Error" + ex);
+            return false; 
         }
     }
      
     public void deleteData(int id,String table){
         try{
-            PreparedStatement pst=connect.prepareStatement("DELETE FROM tbl_med WHERE u_id=?");    
+            PreparedStatement pst = connect.prepareStatement("DELETE FROM tbl_med WHERE u_id = ?");    
             pst.setInt(1,id);
-            int rowsDeleted=pst.executeUpdate();
-                if(rowsDeleted>0){
+            int rowsDeleted = pst.executeUpdate();
+                if(rowsDeleted > 0){
                     JOptionPane.showMessageDialog(null,"Data Deleted Successfully");        
                 }else{
                     System.out.println("Deletion Failed");
@@ -74,6 +77,13 @@ public class dbconfig {
             System.out.println("Connection Error"+ex);
         }
     }
+    
+    public ResultSet getImagePath(String sql) throws SQLException {
+        PreparedStatement pst = connect.prepareStatement(sql);
+        ResultSet rst = pst.executeQuery();
+        return rst;
+    }
+
 
 
 
