@@ -1,6 +1,8 @@
 
 package Admin;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import config.Session;
 import config.dbconfig;
 import java.awt.Color;
@@ -18,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import medicalapp.Loginfrm;
 
 public class adminDashboard extends javax.swing.JFrame {
@@ -26,6 +29,10 @@ public class adminDashboard extends javax.swing.JFrame {
         initComponents();
         updateTimeAndDate();
         updateTotalNumber(); 
+        
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put( "Button.arc", 555 );
     }
 
     private void updateTimeAndDate() {
@@ -69,38 +76,43 @@ public class adminDashboard extends javax.swing.JFrame {
     
     private void updateTotalNumber() {
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/medico","root","");
-            String query = "SELECT COUNT(*) FROM tbl_users";
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/medico", "root", "");
+
+            // Total users from both tables
+            String query = "SELECT (SELECT COUNT(*) FROM customer) + (SELECT COUNT(*) FROM admin_staff) AS totalUsers";
             PreparedStatement pst = conn.prepareStatement(query);
             ResultSet rs = pst.executeQuery();
-            if(rs.next()) {
-                int totalUsers = rs.getInt(1);
+            if (rs.next()) {
+                int totalUsers = rs.getInt("totalUsers");
                 users.setText(Integer.toString(totalUsers));
             }
-            
-            query = "SELECT COUNT(*) FROM tbl_users WHERE u_status = 'Pending'";
+
+            // Pending users from both tables
+            query = "SELECT (SELECT COUNT(*) FROM customer WHERE u_status = 'Pending') + (SELECT COUNT(*) FROM admin_staff WHERE a_status = 'Pending') AS pendingUsers";
             pst = conn.prepareStatement(query);
             rs = pst.executeQuery();
-            if(rs.next()) {
-                int pendingUsers = rs.getInt(1);
+            if (rs.next()) {
+                int pendingUsers = rs.getInt("pendingUsers");
                 pending.setText(Integer.toString(pendingUsers));
             }
-            
-            query = "SELECT COUNT(*) FROM tbl_users WHERE u_status = 'Active'";
+
+            // Archive users from both tables
+            query = "SELECT (SELECT COUNT(*) FROM customer WHERE u_status = 'Archive') + (SELECT COUNT(*) FROM admin_staff WHERE a_status = 'Archive') AS archiveUsers";
             pst = conn.prepareStatement(query);
             rs = pst.executeQuery();
-            if(rs.next()) {
-                int activeUsers = rs.getInt(1);
-                active.setText(Integer.toString(activeUsers));
+            if (rs.next()) {
+                int archiveUsers = rs.getInt("archiveUsers");
+                archive.setText(Integer.toString(archiveUsers)); // Assuming 'archive' is the label for archive users
             }
-            
+
             rs.close();
             pst.close();
             conn.close();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -114,7 +126,6 @@ public class adminDashboard extends javax.swing.JFrame {
         dash = new javax.swing.JButton();
         add = new javax.swing.JButton();
         update = new javax.swing.JButton();
-        archive = new javax.swing.JButton();
         logout = new javax.swing.JButton();
         settings = new javax.swing.JButton();
         reports = new javax.swing.JButton();
@@ -129,7 +140,7 @@ public class adminDashboard extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        active = new javax.swing.JLabel();
+        archive = new javax.swing.JLabel();
         pending = new javax.swing.JLabel();
         users = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -152,11 +163,11 @@ public class adminDashboard extends javax.swing.JFrame {
 
         name.setForeground(new java.awt.Color(255, 255, 255));
         name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        navbar.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 100, 20));
+        navbar.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 100, 20));
 
         pic.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         pic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-test-account-48.png"))); // NOI18N
-        navbar.add(pic, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 80, 40));
+        navbar.add(pic, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 80, 50));
 
         dash.setBackground(new java.awt.Color(0, 51, 102));
         dash.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -175,7 +186,7 @@ public class adminDashboard extends javax.swing.JFrame {
                 dashMouseExited(evt);
             }
         });
-        navbar.add(dash, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 160, 40));
+        navbar.add(dash, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 160, 40));
 
         add.setBackground(new java.awt.Color(0, 51, 102));
         add.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -199,7 +210,7 @@ public class adminDashboard extends javax.swing.JFrame {
                 addActionPerformed(evt);
             }
         });
-        navbar.add(add, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, 160, 40));
+        navbar.add(add, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 160, 40));
 
         update.setBackground(new java.awt.Color(0, 51, 102));
         update.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -218,26 +229,7 @@ public class adminDashboard extends javax.swing.JFrame {
                 updateMouseExited(evt);
             }
         });
-        navbar.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 160, 40));
-
-        archive.setBackground(new java.awt.Color(0, 51, 102));
-        archive.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        archive.setForeground(new java.awt.Color(255, 255, 255));
-        archive.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/archive.png"))); // NOI18N
-        archive.setText("DELETE");
-        archive.setBorder(null);
-        archive.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                archiveMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                archiveMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                archiveMouseExited(evt);
-            }
-        });
-        navbar.add(archive, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 160, 40));
+        navbar.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 160, 40));
 
         logout.setBackground(new java.awt.Color(0, 51, 102));
         logout.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -285,13 +277,13 @@ public class adminDashboard extends javax.swing.JFrame {
                 settingsActionPerformed(evt);
             }
         });
-        navbar.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 320, 160, 40));
+        navbar.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 160, 40));
 
         reports.setBackground(new java.awt.Color(0, 51, 102));
-        reports.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        reports.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         reports.setForeground(new java.awt.Color(255, 255, 255));
         reports.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/REPORTS.png"))); // NOI18N
-        reports.setText("REPORT");
+        reports.setText("REPORTS");
         reports.setBorder(null);
         reports.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -304,7 +296,7 @@ public class adminDashboard extends javax.swing.JFrame {
                 reportsMouseExited(evt);
             }
         });
-        navbar.add(reports, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 160, 40));
+        navbar.add(reports, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 160, 40));
 
         jPanel1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 160, 480));
 
@@ -415,16 +407,16 @@ public class adminDashboard extends javax.swing.JFrame {
         mainbg.add(titlebg);
         titlebg.setBounds(0, 0, 840, 240);
 
-        active.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
-        active.setForeground(new java.awt.Color(255, 255, 255));
-        active.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        active.addMouseListener(new java.awt.event.MouseAdapter() {
+        archive.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
+        archive.setForeground(new java.awt.Color(255, 255, 255));
+        archive.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        archive.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                activeMouseClicked(evt);
+                archiveMouseClicked(evt);
             }
         });
-        mainbg.add(active);
-        active.setBounds(590, 350, 60, 60);
+        mainbg.add(archive);
+        archive.setBounds(590, 320, 60, 60);
 
         pending.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         pending.setForeground(new java.awt.Color(255, 255, 255));
@@ -435,7 +427,7 @@ public class adminDashboard extends javax.swing.JFrame {
             }
         });
         mainbg.add(pending);
-        pending.setBounds(390, 350, 60, 60);
+        pending.setBounds(380, 320, 60, 60);
 
         users.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         users.setForeground(new java.awt.Color(255, 255, 255));
@@ -446,33 +438,33 @@ public class adminDashboard extends javax.swing.JFrame {
             }
         });
         mainbg.add(users);
-        users.setBounds(190, 350, 60, 60);
+        users.setBounds(180, 310, 50, 70);
 
         jLabel12.setFont(new java.awt.Font("Arial Black", 1, 13)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel12.setText("PENDING USERS");
         mainbg.add(jLabel12);
-        jLabel12.setBounds(300, 310, 160, 30);
+        jLabel12.setBounds(280, 280, 180, 30);
 
         jLabel11.setFont(new java.awt.Font("Arial Black", 1, 16)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel11.setText("USERS");
         mainbg.add(jLabel11);
-        jLabel11.setBounds(110, 310, 140, 30);
+        jLabel11.setBounds(60, 280, 190, 30);
 
         jLabel10.setFont(new java.awt.Font("Arial Black", 1, 13)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("ACTIVE USERS");
+        jLabel10.setText("ARCHIVE USERS");
         mainbg.add(jLabel10);
-        jLabel10.setBounds(490, 310, 180, 30);
+        jLabel10.setBounds(500, 280, 170, 30);
 
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/admingradient.png"))); // NOI18N
+        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/admingradient (1).png"))); // NOI18N
         mainbg.add(jLabel13);
-        jLabel13.setBounds(0, 230, 740, 240);
+        jLabel13.setBounds(0, 240, 740, 450);
 
         jPanel1.add(mainbg, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 70, 740, 470));
 
@@ -487,12 +479,12 @@ public class adminDashboard extends javax.swing.JFrame {
         name.setText(ses.getName());
         dbconfig dbc = new dbconfig();
         try {
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT a_image FROM admin_staff WHERE a_id = " + ses.getId();
 
             ResultSet rs = dbc.getImagePath(sql);
 
             if (rs.next()) {
-                String imagePath = rs.getString("u_image");
+                String imagePath = rs.getString("a_image");
                 if (imagePath != null && !imagePath.isEmpty()) {
                     pic.setIcon(ResizeImage(imagePath, null, pic));
                 } else {
@@ -512,9 +504,9 @@ public class adminDashboard extends javax.swing.JFrame {
         
     }//GEN-LAST:event_pendingMouseClicked
 
-    private void activeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_activeMouseClicked
+    private void archiveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_archiveMouseClicked
         
-    }//GEN-LAST:event_activeMouseClicked
+    }//GEN-LAST:event_archiveMouseClicked
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
         // TODO add your handling code here:
@@ -527,6 +519,7 @@ public class adminDashboard extends javax.swing.JFrame {
     private void dashMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashMouseClicked
         adminDashboard ad = new adminDashboard();
         ad.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_dashMouseClicked
 
     private void addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addMouseClicked
@@ -547,12 +540,6 @@ public class adminDashboard extends javax.swing.JFrame {
         mainbg.add(up).setVisible(true);
 
     }//GEN-LAST:event_updateMouseClicked
-
-    private void archiveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_archiveMouseClicked
-        delDash del = new delDash();
-        mainbg.add(del).setVisible(true);
-
-    }//GEN-LAST:event_archiveMouseClicked
 
     private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
         infoDetails inf = new infoDetails();
@@ -587,12 +574,6 @@ public class adminDashboard extends javax.swing.JFrame {
         logout.setForeground(Color.white);
     }//GEN-LAST:event_logoutMouseExited
 
-    private void reportsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMouseClicked
-        generateReports rpt = new generateReports();
-        mainbg.add(rpt).setVisible(true);
-        
-    }//GEN-LAST:event_reportsMouseClicked
-
     private void settingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_settingsActionPerformed
@@ -613,13 +594,18 @@ public class adminDashboard extends javax.swing.JFrame {
         update.setForeground(Color.white);
     }//GEN-LAST:event_updateMouseExited
 
-    private void archiveMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_archiveMouseEntered
-        archive.setForeground(new Color(0, 102, 204));
-    }//GEN-LAST:event_archiveMouseEntered
+    private void settingsMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseEntered
+        settings.setForeground(new Color(0, 102, 204));
+    }//GEN-LAST:event_settingsMouseEntered
 
-    private void archiveMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_archiveMouseExited
-        archive.setForeground(Color.white);
-    }//GEN-LAST:event_archiveMouseExited
+    private void settingsMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseExited
+       settings.setForeground(Color.white);
+    }//GEN-LAST:event_settingsMouseExited
+
+    private void reportsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMouseClicked
+        completedOrders com = new completedOrders();
+        mainbg.add(com).setVisible(true);
+    }//GEN-LAST:event_reportsMouseClicked
 
     private void reportsMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMouseEntered
         reports.setForeground(new Color(0, 102, 204));
@@ -628,14 +614,6 @@ public class adminDashboard extends javax.swing.JFrame {
     private void reportsMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMouseExited
         reports.setForeground(Color.white);
     }//GEN-LAST:event_reportsMouseExited
-
-    private void settingsMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseEntered
-        settings.setForeground(new Color(0, 102, 204));
-    }//GEN-LAST:event_settingsMouseEntered
-
-    private void settingsMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseExited
-       settings.setForeground(Color.white);
-    }//GEN-LAST:event_settingsMouseExited
 
    
     public static void main(String args[]) {
@@ -648,9 +626,8 @@ public class adminDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel active;
     private javax.swing.JButton add;
-    private javax.swing.JButton archive;
+    private javax.swing.JLabel archive;
     private javax.swing.JButton dash;
     public javax.swing.JLabel date;
     private javax.swing.ButtonGroup gd;

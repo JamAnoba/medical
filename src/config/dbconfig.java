@@ -64,7 +64,7 @@ public class dbconfig {
      
     public void deleteData(int id,String table){
         try{
-            PreparedStatement pst = connect.prepareStatement("DELETE FROM tbl_med WHERE u_id = ?");    
+            PreparedStatement pst = connect.prepareStatement("DELETE FROM customer WHERE u_id = ?");    
             pst.setInt(1,id);
             int rowsDeleted = pst.executeUpdate();
                 if(rowsDeleted > 0){

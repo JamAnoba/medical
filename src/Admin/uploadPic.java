@@ -93,12 +93,12 @@ public class uploadPic extends javax.swing.JFrame {
          Session ses = Session.getInstance();
 
         try{
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT a_image FROM admin_staff WHERE a_id = " + ses.getId();
 
             ResultSet rs = dbc.getData(sql);
 
             if(rs.next()) {
-                String imagePath = rs.getString("u_image");
+                String imagePath = rs.getString("a_image");
                 if(imagePath != null && !imagePath.isEmpty()) {
                     pic.setIcon(ResizeImage(imagePath, null, pic));
                     remove.setEnabled(true); 
@@ -236,12 +236,12 @@ public class uploadPic extends javax.swing.JFrame {
         Session ses = Session.getInstance();
         dbconfig dbc = new dbconfig();
 
-        String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+        String sql = "SELECT a_image FROM admin_staff WHERE a_id = " + ses.getId();
 
         try {
             ResultSet rs = dbc.getData(sql);
             if (rs.next()) {
-                String imagePath = rs.getString("u_image");
+                String imagePath = rs.getString("a_image");
                 File file = new File(imagePath);
                 if (file.exists()) {
                     if (file.delete()) {
@@ -254,7 +254,7 @@ public class uploadPic extends javax.swing.JFrame {
                     System.out.println("File not found");
                 }
 
-                String updateSql = "UPDATE tbl_users SET u_image = '' WHERE u_id = " + ses.getId();
+                String updateSql = "UPDATE admin_staff SET a_image = '' WHERE a_id = " + ses.getId();
                 if (dbc.updateData(updateSql)) {
                     JOptionPane.showMessageDialog(null, "Photo deleted successfully!");
                     displayUploadedPicture();
@@ -338,12 +338,12 @@ public class uploadPic extends javax.swing.JFrame {
         name.setText(ses.getName());
 
         try{
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT a_image FROM admin_staff WHERE a_id = " + ses.getId();
 
             ResultSet rs = dbc.getData(sql);
 
             if(rs.next()) {
-                String imagePath = rs.getString("u_image");
+                String imagePath = rs.getString("a_image");
                 if(imagePath != null && !imagePath.isEmpty()) {
                     pic.setIcon(ResizeImage(imagePath, null, pic));
                 }else {

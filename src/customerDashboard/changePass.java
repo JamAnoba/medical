@@ -1,6 +1,8 @@
 
 package customerDashboard;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import config.Session;
 import config.dbconfig;
 import config.passHash;
@@ -9,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import medicalapp.Loginfrm;
 
 public class changePass extends javax.swing.JFrame {
@@ -16,6 +19,9 @@ public class changePass extends javax.swing.JFrame {
     
     public changePass() {
         initComponents();
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put( "Button.arc", 555 );
     }
 
     
@@ -159,7 +165,7 @@ public class changePass extends javax.swing.JFrame {
             dbconfig db = new dbconfig();
             Session ses = Session.getInstance();
 
-            String query = "SELECT * FROM tbl_med WHERE u_id = '"+ses.getId()+"'";
+            String query = "SELECT * FROM customer WHERE u_id = '"+ses.getId()+"'";
             ResultSet rs = db.getData(query);
             if(rs.next()) {
                 String oldpass = rs.getString("u_pass");
@@ -179,7 +185,7 @@ public class changePass extends javax.swing.JFrame {
                         cfp.setForeground(Color.GREEN);
 
                         // Updates the password in the database
-                        db.updateData("UPDATE tbl_med SET u_pass = '"+hashedNPass+"' WHERE u_id = '"+ses.getId()+"'");
+                        db.updateData("UPDATE customer SET u_pass = '"+hashedNPass+"' WHERE u_id = '"+ses.getId()+"'");
                        
                         JOptionPane.showMessageDialog(null, "Password Updated Successfully!");
                         Loginfrm log = new Loginfrm();

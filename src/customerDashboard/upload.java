@@ -220,13 +220,13 @@ public class upload extends javax.swing.JInternalFrame {
     if (returnValue == JFileChooser.APPROVE_OPTION) {
         try {
             selectedFile = fileChooser.getSelectedFile();
-            path = selectedFile.getAbsolutePath(); // Assign the absolute path of the selected file
-            destination = "src/userimages/" + selectedFile.getName(); // Adjust the destination path accordingly
+            path = selectedFile.getAbsolutePath(); 
+            destination = "src/userimages/" + selectedFile.getName();
 
             if (FileExistenceChecker(path) == 1) {
                 JOptionPane.showMessageDialog(null, "File Already Exists. Please choose another file.");
-                destination = ""; // Reset destination if file already exists
-                path = ""; // Reset path if file already exists
+                destination = "";
+                path = "";
             } else {
                 image.setIcon(ResizeImage(path, null, image));
                 remove.setEnabled(true);

@@ -2,6 +2,7 @@
 package medicalapp;
 
 import Admin.adminDashboard;
+import com.formdev.flatlaf.FlatClientProperties;
 import pharmacistDashboard.pharmadb;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -24,40 +25,75 @@ public class Loginfrm extends javax.swing.JFrame {
         FlatLightLaf.setup();
         FlatIntelliJLaf.setup();
         UIManager.put( "Button.arc", 555 );
+        
+        us.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,"Username");
+        ps.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,"Password");
+
+        us.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON,true);
+        ps.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON,true);
+
+        ps.putClientProperty(FlatClientProperties.STYLE, "showRevealButton:true;"+"showCapsLock:true;");
+
     }
     
    
    
     public static boolean loginAcc(String user, String pass){
-        dbconfig connector = new dbconfig(); 
+        dbconfig connector = new dbconfig();
         try {
-            String query = "SELECT * FROM tbl_users WHERE u_username = '" + user + "' ";
-            ResultSet rs = connector.getData(query);
+            // Check in the customer table
+            String queryUser = "SELECT * FROM customer WHERE u_username = '" + user + "' ";
+            ResultSet rsUser = connector.getData(queryUser);
 
-            if (rs.next()) {
-                String hashedPass = rs.getString("u_pass");
+            if (rsUser.next()) {
+                String hashedPass = rsUser.getString("u_pass");
 
                 if (passHash.hashPassword(pass).equals(hashedPass)) {
                     Session ses = Session.getInstance();
-                    ses.setId(rs.getInt("u_id"));
-                    ses.setName(rs.getString("u_name"));
-                    ses.setEmail(rs.getString("u_email"));
-                    ses.setUsername(rs.getString("u_username"));
-                    ses.setAcctype(rs.getString("u_type"));
-                    ses.setSex(rs.getString("u_gender"));
-                    ses.setStatus(rs.getString("u_status"));
-                    ses.setContact(rs.getString("u_contact")); 
+                    ses.setId(rsUser.getInt("u_id"));
+                    ses.setName(rsUser.getString("u_name"));
+                    ses.setEmail(rsUser.getString("u_email"));
+                    ses.setUsername(rsUser.getString("u_username"));
+                    ses.setAcctype(rsUser.getString("u_type"));
+                    ses.setSex(rsUser.getString("u_gender"));
+                    ses.setStatus(rsUser.getString("u_status"));
+                    ses.setContact(rsUser.getString("u_contact"));
                     ses.setPass(hashedPass);
 
-                    return true;     
+                    return true;
                 } else {
                     return false;
                 }
-            } else {
-                return false;
             }
-        } catch(SQLException | NoSuchAlgorithmException ex) {
-            return false; 
+
+            // Check in the admin_staff table
+            String queryAdmin = "SELECT * FROM admin_staff WHERE a_username = '" + user + "' ";
+            ResultSet rsAdmin = connector.getData(queryAdmin);
+
+            if (rsAdmin.next()) {
+                String hashedPass = rsAdmin.getString("a_pass");
+
+                if (passHash.hashPassword(pass).equals(hashedPass)) {
+                    Session ses = Session.getInstance();
+                    ses.setId(rsAdmin.getInt("a_id"));
+                    ses.setName(rsAdmin.getString("a_name"));
+                    ses.setEmail(rsAdmin.getString("a_email"));
+                    ses.setUsername(rsAdmin.getString("a_username"));
+                    ses.setAcctype(rsAdmin.getString("a_type"));
+                    ses.setSex(rsAdmin.getString("a_gender"));
+                    ses.setStatus(rsAdmin.getString("a_status"));
+                    ses.setContact(rsAdmin.getString("a_contact"));
+                    ses.setPass(hashedPass);
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            return false;
+        } catch (SQLException | NoSuchAlgorithmException ex) {
+            return false;
         }
     }
 
@@ -71,14 +107,12 @@ public class Loginfrm extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         us = new javax.swing.JTextField();
-        loginbutton = new javax.swing.JLabel();
         createacc = new javax.swing.JLabel();
         back = new javax.swing.JLabel();
         ps = new javax.swing.JPasswordField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        button = new javax.swing.JLabel();
-        viewpass = new javax.swing.JCheckBox();
+        signin = new javax.swing.JButton();
         loginbg = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -104,18 +138,6 @@ public class Loginfrm extends javax.swing.JFrame {
         });
         jPanel1.add(us);
         us.setBounds(570, 190, 270, 40);
-
-        loginbutton.setFont(new java.awt.Font("Arial", 1, 20)); // NOI18N
-        loginbutton.setForeground(new java.awt.Color(255, 255, 255));
-        loginbutton.setText("Log In");
-        loginbutton.setToolTipText("");
-        loginbutton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                loginbuttonMouseClicked(evt);
-            }
-        });
-        jPanel1.add(loginbutton);
-        loginbutton.setBounds(690, 340, 60, 50);
 
         createacc.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         createacc.setForeground(new java.awt.Color(255, 255, 255));
@@ -151,21 +173,17 @@ public class Loginfrm extends javax.swing.JFrame {
         jPanel1.add(jLabel2);
         jLabel2.setBounds(550, 110, 250, 15);
 
-        button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/button_1.png"))); // NOI18N
-        jPanel1.add(button);
-        button.setBounds(480, 300, 330, 360);
-
-        viewpass.setBackground(new java.awt.Color(0, 51, 102));
-        viewpass.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
-        viewpass.setForeground(new java.awt.Color(255, 255, 255));
-        viewpass.setText("Show Password");
-        viewpass.addActionListener(new java.awt.event.ActionListener() {
+        signin.setBackground(new java.awt.Color(0, 0, 102));
+        signin.setFont(new java.awt.Font("Arial", 1, 20)); // NOI18N
+        signin.setForeground(new java.awt.Color(255, 255, 255));
+        signin.setText("Log In");
+        signin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewpassActionPerformed(evt);
+                signinActionPerformed(evt);
             }
         });
-        jPanel1.add(viewpass);
-        viewpass.setBounds(751, 300, 90, 20);
+        jPanel1.add(signin);
+        signin.setBounds(650, 350, 120, 40);
 
         loginbg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/logIN (1).png"))); // NOI18N
         jPanel1.add(loginbg);
@@ -186,41 +204,6 @@ public class Loginfrm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loginbuttonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginbuttonMouseClicked
-        Session ses = Session.getInstance();
-    
-        if(us.getText().isEmpty() || ps.getText().isEmpty()){
-            JOptionPane.showMessageDialog(null, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE); 
-            return;
-        }
-
-        if(loginAcc(us.getText(), ps.getText())){
-           
-            if(ses.getStatus().equals("Active") && ses.getAcctype().equalsIgnoreCase("Patient") ){
-                JOptionPane.showMessageDialog(null, "Log In Successfully as Patient!");    
-                customerdb db = new customerdb();
-                db.setVisible(true);
-                this.dispose();   
-            }else if(ses.getStatus().equals("Active") && ses.getAcctype().equalsIgnoreCase("Pharmacist")){
-                JOptionPane.showMessageDialog(null, "Log In Successfully as Pharmacist!"); 
-                pharmadb pd = new pharmadb();
-                pd.setVisible(true);
-                this.dispose();  
-            }else if (ses.getStatus().equals("Active") && ses.getAcctype().equalsIgnoreCase("Admin")){
-                JOptionPane.showMessageDialog(null, "Log In Successfully as Admin!"); 
-                adminDashboard ad = new adminDashboard();
-                ad.setVisible(true);
-                this.dispose();
-            }else if(ses.getStatus().equals("Pending")){
-                JOptionPane.showMessageDialog(null, "Pending Account!");
-            }
-        }else {
-            JOptionPane.showMessageDialog(null, "Account Not Found!");
-            us.setText("");
-            ps.setText("");
-        }
-    }//GEN-LAST:event_loginbuttonMouseClicked
-
     private void createaccMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createaccMouseClicked
         Signup sgn = new Signup();
         sgn.setVisible(true);
@@ -237,21 +220,43 @@ public class Loginfrm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_usActionPerformed
 
-    private void viewpassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewpassActionPerformed
-        if(viewpass.isSelected()){
-            ps.setEchoChar((char)0);
-        }else{
-            ps.setEchoChar('\u25CF');
+    private void signinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinActionPerformed
+         Session ses = Session.getInstance();
+
+        if (us.getText().isEmpty() || ps.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-            
-    }//GEN-LAST:event_viewpassActionPerformed
+
+        if (loginAcc(us.getText(), ps.getText())) {
+            if (ses.getStatus().equals("Active") && ses.getAcctype().equalsIgnoreCase("Patient")) {
+                JOptionPane.showMessageDialog(null, "Log In Successfully as Patient!");
+                customerdb db = new customerdb();
+                db.setVisible(true);
+                this.dispose();
+            } else if (ses.getStatus().equals("Active") && ses.getAcctype().equalsIgnoreCase("Pharmacist")) {
+                JOptionPane.showMessageDialog(null, "Log In Successfully as Pharmacist!");
+                pharmadb pd = new pharmadb();
+                pd.setVisible(true);
+                this.dispose();
+            } else if (ses.getStatus().equals("Active") && ses.getAcctype().equalsIgnoreCase("Admin")) {
+                JOptionPane.showMessageDialog(null, "Log In Successfully as Admin!");
+                adminDashboard ad = new adminDashboard();
+                ad.setVisible(true);
+                this.dispose();
+            } else if (ses.getStatus().equals("Pending")) {
+                JOptionPane.showMessageDialog(null, "Pending Account!");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Account Not Found!");
+            us.setText("");
+            ps.setText("");
+        }
+    }//GEN-LAST:event_signinActionPerformed
 
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -280,7 +285,6 @@ public class Loginfrm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel back;
-    private javax.swing.JLabel button;
     private javax.swing.JLabel createacc;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;
@@ -288,10 +292,9 @@ public class Loginfrm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel loginbg;
-    private javax.swing.JLabel loginbutton;
     private javax.swing.JPasswordField ps;
+    private javax.swing.JButton signin;
     private javax.swing.JTextField us;
-    private javax.swing.JCheckBox viewpass;
     // End of variables declaration//GEN-END:variables
 
     void SetVisible(boolean b) {

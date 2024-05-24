@@ -120,8 +120,8 @@ public class receivedOrders extends javax.swing.JInternalFrame {
     public void displayData(){
         try{
             dbconfig dbc = new dbconfig();
-            ResultSet rs = dbc.getData("SELECT prescriptions.p_id, tbl_users.u_name, tbl_users.u_contact, prescriptions.p_pic, prescriptions.date, prescriptions.time\n" +
-            "FROM tbl_users INNER JOIN prescriptions ON prescriptions.u_id = tbl_users.u_id WHERE p_status = 'Received'");
+            ResultSet rs = dbc.getData("SELECT prescriptions.p_id, customer.u_name, customer.u_contact, prescriptions.p_pic, prescriptions.date, prescriptions.time, admin_staff.a_name\n" +
+            "FROM customer INNER JOIN prescriptions ON prescriptions.u_id = customer.u_id INNER JOIN admin_staff ON prescriptions.a_id=admin_staff.a_id  WHERE p_status = 'Received'");
             info_tbl.setModel(DbUtils.resultSetToTableModel(rs));
             rs.close();
         }catch(SQLException ex){

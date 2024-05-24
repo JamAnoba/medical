@@ -29,18 +29,17 @@ public class pickUp extends javax.swing.JInternalFrame {
     }
 
     public void displayData(){
-        try{
+        try {
             dbconfig dbc = new dbconfig();
-            ResultSet rs = dbc.getData("SELECT prescriptions.p_id, tbl_users.u_id, tbl_users.u_contact, prescriptions.p_pic, prescriptions.date, prescriptions.time\n" +
-            "FROM tbl_users INNER JOIN prescriptions ON prescriptions.u_id = tbl_users.u_id WHERE p_status = 'Ready for pick up'");
+            ResultSet rs = dbc.getData("SELECT prescriptions.p_id, customer.u_name, customer.u_contact, prescriptions.p_pic, prescriptions.date, prescriptions.time\n" +
+            "FROM customer INNER JOIN prescriptions ON prescriptions.u_id = customer.u_id WHERE p_status = 'Ready for pick up'");
             info_tbl.setModel(DbUtils.resultSetToTableModel(rs));
             rs.close();
-        }catch(SQLException ex){
-            System.out.println("Errors: "+ex.getMessage());
-        
+        } catch(SQLException ex) {
+            System.out.println("Errors: " + ex.getMessage());
         }
- 
     }
+  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -151,6 +150,10 @@ public class pickUp extends javax.swing.JInternalFrame {
 
     private void receivedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receivedActionPerformed
         dbconfig dbc = new dbconfig();
+        Session ses = Session.getInstance();
+        int pharmacistId = ses.getId();  // Assuming this gets the current logged-in pharmacist's ID
+
+        
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
@@ -165,7 +168,7 @@ public class pickUp extends javax.swing.JInternalFrame {
             return;
         }
 
-        String updateQuery = "UPDATE prescriptions SET p_status = 'Received', `date` = '"+currentDate+"', `time` = '"+currentTime+"' WHERE p_id = '"+prescriptionId+"'";
+        String updateQuery = "UPDATE prescriptions SET a_id='"+ses.getId()+"', p_status = 'Received', date = '" + currentDate + "', time = '" + currentTime + "', a_id = '" + pharmacistId + "' WHERE p_id = '" + prescriptionId + "'";
 
         boolean updateSuccess = dbc.updateData(updateQuery);
 

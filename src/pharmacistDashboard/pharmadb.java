@@ -1,6 +1,8 @@
 
 package pharmacistDashboard;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import config.Session;
 import config.dbconfig;
 import java.awt.Color;
@@ -18,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import medicalapp.Loginfrm;
 
 public class pharmadb extends javax.swing.JFrame {
@@ -27,6 +30,10 @@ public class pharmadb extends javax.swing.JFrame {
         initComponents();
         updateTimeAndDate();
         updateTotal();
+        
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put( "Button.arc", 555 );
     }
 
     private void updateTimeAndDate() {
@@ -167,6 +174,7 @@ public class pharmadb extends javax.swing.JFrame {
 
         nursenm.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         nursenm.setForeground(new java.awt.Color(255, 255, 255));
+        nursenm.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         pharmadb.add(nursenm);
         nursenm.setBounds(30, 140, 90, 20);
 
@@ -487,7 +495,7 @@ public class pharmadb extends javax.swing.JFrame {
         
         dbconfig dbc = new dbconfig();
         try {
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT u_image FROM customer WHERE u_id = " + ses.getId();
 
             ResultSet rs = dbc.getImagePath(sql);
 
@@ -531,6 +539,7 @@ public class pharmadb extends javax.swing.JFrame {
     private void dashMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashMouseClicked
         pharmadb db = new pharmadb();
         db.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_dashMouseClicked
 
     private void pendingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pendingMouseClicked

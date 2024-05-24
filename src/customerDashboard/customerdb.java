@@ -2,6 +2,8 @@
 package customerDashboard;
 
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import config.Session;
 import config.dbconfig;
 import java.awt.Color;
@@ -19,6 +21,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import medicalapp.Loginfrm;
 
 
@@ -29,11 +32,11 @@ public class customerdb extends javax.swing.JFrame {
         initComponents();
         updateTimeAndDate();
         updateCounts();
+        
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put( "Button.arc", 555 );
     }
-    
-    Color navcolor = new Color(0,51,102);
-    Color headercolor = new Color(240,240,240);
-    Color bodycolor = new Color(240,240,240);
 
     private void updateTimeAndDate() {
         Timer timer = new Timer(1000, new ActionListener() {
@@ -405,7 +408,7 @@ public class customerdb extends javax.swing.JFrame {
         docnm.setText(ses.getName());
         dbconfig dbc = new dbconfig();
         try {
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT u_image FROM customer WHERE u_id = " + ses.getId();
 
             ResultSet rs = dbc.getImagePath(sql);
 
@@ -460,7 +463,7 @@ public class customerdb extends javax.swing.JFrame {
     private void dashMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashMouseClicked
         customerdb db = new customerdb();
         db.setVisible(true);
-
+        this.dispose();
     }//GEN-LAST:event_dashMouseClicked
 
     private void dashMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashMouseEntered

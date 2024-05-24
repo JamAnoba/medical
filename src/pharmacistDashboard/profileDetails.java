@@ -1,21 +1,26 @@
 
 package pharmacistDashboard;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import config.Session;
 import config.dbconfig;
-import static customerDashboard.personalDetails.getHeightFromWidth;
 import java.awt.Image;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 public class profileDetails extends javax.swing.JFrame {
 
    
     public profileDetails() {
         initComponents();
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put( "Button.arc", 555 );
     }
 
     public boolean duplicateChecker(){
@@ -26,11 +31,11 @@ public class profileDetails extends javax.swing.JFrame {
 
         dbconfig dbc = new dbconfig();
         try {
-            ResultSet resultSet = dbc.getData("SELECT * FROM tbl_users WHERE (u_username = '" + n_username + "' OR u_email = '" + n_email + "' OR u_contact = '" + n_contact + "') AND u_id != '"+userId+"' ");
+            ResultSet resultSet = dbc.getData("SELECT * FROM admin_staff WHERE (a_username = '" + n_username + "' OR a_email = '" + n_email + "' OR a_contact = '" + n_contact + "') AND a_id != '"+userId+"' ");
             if(resultSet.next()) {
-                String email = resultSet.getString("u_email");
-                String username = resultSet.getString("u_username");
-                String contact = resultSet.getString("u_contact");
+                String email = resultSet.getString("a_email");
+                String username = resultSet.getString("a_username");
+                String contact = resultSet.getString("a_contact");
 
                 if (email.equals(n_email)) {
                     JOptionPane.showMessageDialog(null, "Email is already used!");
@@ -318,12 +323,12 @@ public class profileDetails extends javax.swing.JFrame {
                 gd.setText("");
             }
         try {
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT a_image FROM admin_staff WHERE a_id = " + ses.getId();
 
             ResultSet rs = dbc.getImagePath(sql);
 
             if (rs.next()) {
-                String imagePath = rs.getString("u_image");
+                String imagePath = rs.getString("a_image");
                 if (imagePath != null && !imagePath.isEmpty()) {
                     pic.setIcon(ResizeImage(imagePath, null, pic));
                 } else {
@@ -345,8 +350,8 @@ public class profileDetails extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);  
             pem.setText("");
         } else {
-            if (dbc.updateData("UPDATE tbl_users SET u_name ='"+pnm.getText()+"',u_username ='"+pus.getText()+"',"
-                + "u_email='"+pem.getText()+"' WHERE u_id ='"+id.getText()+"'")) {
+            if (dbc.updateData("UPDATE admin_staff SET a_name ='"+pnm.getText()+"',a_username ='"+pus.getText()+"',"
+                + "a_email='"+pem.getText()+"' WHERE a_id ='"+id.getText()+"'")) {
 
                 Session ses = Session.getInstance();
                 ses.setName(pnm.getText());

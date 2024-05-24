@@ -32,8 +32,8 @@ public class newOrders extends javax.swing.JInternalFrame {
     public void displayData(){
         try{
             dbconfig dbc = new dbconfig();
-            ResultSet rs = dbc.getData("SELECT prescriptions.p_id, tbl_users.u_name, tbl_users.u_contact, prescriptions.p_pic, prescriptions.date, prescriptions.time\n" +
-            "FROM tbl_users INNER JOIN prescriptions ON prescriptions.u_id = tbl_users.u_id WHERE p_status = 'Pending'");
+            ResultSet rs = dbc.getData("SELECT prescriptions.p_id, customer.u_name, customer.u_contact, prescriptions.p_pic, prescriptions.date, prescriptions.time\n" +
+            "FROM customer INNER JOIN prescriptions ON prescriptions.u_id = customer.u_id WHERE p_status = 'Pending'");
             info_tbl.setModel(DbUtils.resultSetToTableModel(rs));
             rs.close();
         }catch(SQLException ex){

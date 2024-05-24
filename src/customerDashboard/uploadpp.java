@@ -94,7 +94,7 @@ public class uploadpp extends javax.swing.JFrame {
         Session ses = Session.getInstance();
         
         try{
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT u_image FROM customer WHERE u_id = " + ses.getId();
             
             ResultSet rs = dbc.getData(sql);
             
@@ -250,7 +250,7 @@ public class uploadpp extends javax.swing.JFrame {
             return;
         }
 
-        if (dbc.insertData("UPDATE tbl_users SET u_image = '" + destination + "' WHERE u_id = '" + ses.getId() + "'")) {
+        if (dbc.insertData("UPDATE customer SET u_image = '" + destination + "' WHERE u_id = '" + ses.getId() + "'")) {
             JOptionPane.showMessageDialog(null, "Photo uploaded successfully!");
         }else {
             JOptionPane.showMessageDialog(null, "Failed to upload photo!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -295,7 +295,7 @@ public class uploadpp extends javax.swing.JFrame {
         name.setText(ses.getName());
 
         try{
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT u_image FROM customer WHERE u_id = " + ses.getId();
 
             ResultSet rs = dbc.getData(sql);
 
@@ -316,7 +316,7 @@ public class uploadpp extends javax.swing.JFrame {
         Session ses = Session.getInstance();
         dbconfig dbc = new dbconfig();
         
-        String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+        String sql = "SELECT u_image FROM customer WHERE u_id = " + ses.getId();
 
         try {
             ResultSet rs = dbc.getData(sql);
@@ -334,7 +334,7 @@ public class uploadpp extends javax.swing.JFrame {
                     System.out.println("File not found");
                 }
 
-                String updateSql = "UPDATE tbl_users SET u_image = '' WHERE u_id = " + ses.getId();
+                String updateSql = "UPDATE customer SET u_image = '' WHERE u_id = " + ses.getId();
                 if (dbc.updateData(updateSql)) {
                     JOptionPane.showMessageDialog(null, "Photo deleted successfully!");
                     displayUploadedPicture();

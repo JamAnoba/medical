@@ -1,6 +1,8 @@
 
 package customerDashboard;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import config.Session;
 import config.dbconfig;
 import java.awt.Image;
@@ -16,12 +18,16 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 public class personalDetails extends javax.swing.JFrame {
 
     
     public personalDetails() {
         initComponents();
+        FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put( "Button.arc", 555 );
     }
 
     public boolean duplicateChecker(){
@@ -32,7 +38,7 @@ public class personalDetails extends javax.swing.JFrame {
 
         dbconfig dbc = new dbconfig();
         try {
-            ResultSet resultSet = dbc.getData("SELECT * FROM tbl_users WHERE (u_username = '" + n_username + "' OR u_email = '" + n_email + "' OR u_contact = '" + n_contact + "') AND u_id != '"+userId+"' ");
+            ResultSet resultSet = dbc.getData("SELECT * FROM customer WHERE (u_username = '" + n_username + "' OR u_email = '" + n_email + "' OR u_contact = '" + n_contact + "') AND u_id != '"+userId+"' ");
             if(resultSet.next()) {
                 String email = resultSet.getString("u_email");
                 String username = resultSet.getString("u_username");
@@ -349,7 +355,7 @@ public class personalDetails extends javax.swing.JFrame {
         }
 
         try {
-            String sql = "SELECT u_image FROM tbl_users WHERE u_id = " + ses.getId();
+            String sql = "SELECT u_image FROM customer WHERE u_id = " + ses.getId();
 
             ResultSet rs = dbc.getImagePath(sql);
 
@@ -411,7 +417,7 @@ public class personalDetails extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please enter a valid email.", "Error", JOptionPane.ERROR_MESSAGE);
             pem.setText("");
         } else {
-            if (dbc.updateData("UPDATE tbl_users SET u_name ='"+pnm.getText()+"',u_username ='"+pus.getText()+"',"
+            if (dbc.updateData("UPDATE customer SET u_name ='"+pnm.getText()+"',u_username ='"+pus.getText()+"',"
                 + "u_email='"+pem.getText()+"' WHERE u_id ='"+id.getText()+"'")) {
 
             Session ses = Session.getInstance();

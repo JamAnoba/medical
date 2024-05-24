@@ -1,6 +1,7 @@
 
 package medicalapp;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import config.dbconfig;
@@ -29,6 +30,10 @@ public class Signup extends javax.swing.JFrame {
         FlatLightLaf.setup();
         FlatIntelliJLaf.setup();
         UIManager.put( "Button.arc", 555 );
+        
+        ps.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON,true);
+
+        ps.putClientProperty(FlatClientProperties.STYLE, "showRevealButton:true;"+"showCapsLock:true;");
     }
 
     public String destination = "";
@@ -41,37 +46,58 @@ public class Signup extends javax.swing.JFrame {
     public boolean duplicateChecker(){
         dbconfig dbc = new dbconfig();
         
-        try{
-            String query = "SELECT * FROM tbl_users  WHERE u_username = '" + us.getText() + "' OR u_email = '" + em.getText() + "'";
-            ResultSet resultSet = dbc.getData(query);
-           
-            if(resultSet.next()){ 
-                email = resultSet.getString("u_email");
-                    if(email.equals(em.getText())){
-                        JOptionPane.showMessageDialog(null, "Email is already used!");
-                        em.setText("");
-                    }
-                usname = resultSet.getString("u_username");
-                    if(usname.equals(us.getText())){
-                        JOptionPane.showMessageDialog(null, "Username is already used!");
-                        us.setText("");
-                    }
-                contact = resultSet.getString("u_contact");
-                    if(contact.equals(cn.getText())){
-                        JOptionPane.showMessageDialog(null, "Contact no. is already used!");
-                        cn.setText("");
-                    }
-                return true;
-            }else{
-                return false; 
-            }
-        }catch (SQLException ex) {
-            System.out.println(""+ex);
-            return false;
-            
-        }
+        try {
+            // Check for duplicates in admin_staff table
+            String queryAdminStaff = "SELECT * FROM admin_staff WHERE a_email = '" + em.getText() + "' OR a_username = '" + us.getText() + "' OR a_contact = '" + cn.getText() + "'";
+            ResultSet resultSetAdminStaff = dbc.getData(queryAdminStaff);
 
-        
+            if (resultSetAdminStaff.next()) {
+                email = resultSetAdminStaff.getString("a_email");
+                if (email.equals(em.getText())) {
+                    JOptionPane.showMessageDialog(null, "Email is already used!");
+                    em.setText("");
+                }
+                usname = resultSetAdminStaff.getString("a_username");
+                if (usname.equals(us.getText())) {
+                    JOptionPane.showMessageDialog(null, "Username is already used!");
+                    us.setText("");
+                }
+                contact = resultSetAdminStaff.getString("a_contact");
+                if (contact.equals(cn.getText())) {
+                    JOptionPane.showMessageDialog(null, "Contact no. is already used!");
+                    cn.setText("");
+                }
+                return true;
+            }
+
+            // Check for duplicates in customer table
+            String queryCustomer = "SELECT * FROM customer WHERE u_email = '" + em.getText() + "' OR u_username = '" + us.getText() + "' OR u_contact = '" + cn.getText() + "'";
+            ResultSet resultSetCustomer = dbc.getData(queryCustomer);
+
+            if (resultSetCustomer.next()) {
+                email = resultSetCustomer.getString("u_email");
+                if (email.equals(em.getText())) {
+                    JOptionPane.showMessageDialog(null, "Email is already used!");
+                    em.setText("");
+                }
+                usname = resultSetCustomer.getString("u_username");
+                if (usname.equals(us.getText())) {
+                    JOptionPane.showMessageDialog(null, "Username is already used!");
+                    us.setText("");
+                }
+                contact = resultSetCustomer.getString("u_contact");
+                if (contact.equals(cn.getText())) {
+                    JOptionPane.showMessageDialog(null, "Contact no. is already used!");
+                    cn.setText("");
+                }
+                return true;
+            }
+
+            return false;
+        } catch (SQLException ex) {
+            System.out.println("SQL Error: " + ex.getMessage());
+            return false;
+        }    
     }
     
     private boolean isValidContact(String contact){
@@ -140,7 +166,6 @@ public class Signup extends javax.swing.JFrame {
         login = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        viewpass = new javax.swing.JCheckBox();
         at = new javax.swing.JLabel();
         male = new javax.swing.JRadioButton();
         fem = new javax.swing.JRadioButton();
@@ -161,9 +186,7 @@ public class Signup extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(900, 506));
         setMinimumSize(new java.awt.Dimension(900, 520));
-        setPreferredSize(new java.awt.Dimension(900, 540));
 
         jPanel1.setLayout(null);
         jPanel1.add(nm);
@@ -255,17 +278,6 @@ public class Signup extends javax.swing.JFrame {
         jPanel1.add(jLabel4);
         jLabel4.setBounds(80, 60, 320, 20);
 
-        viewpass.setBackground(new java.awt.Color(0, 51, 102));
-        viewpass.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
-        viewpass.setForeground(new java.awt.Color(255, 255, 255));
-        viewpass.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewpassActionPerformed(evt);
-            }
-        });
-        jPanel1.add(viewpass);
-        viewpass.setBounds(420, 320, 20, 30);
-
         at.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         at.setForeground(new java.awt.Color(255, 255, 255));
         at.setText("Account Type:");
@@ -291,7 +303,7 @@ public class Signup extends javax.swing.JFrame {
         jPanel1.add(fem);
         fem.setBounds(200, 360, 70, 20);
 
-        register.setBackground(new java.awt.Color(0, 51, 153));
+        register.setBackground(new java.awt.Color(0, 0, 102));
         register.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         register.setForeground(new java.awt.Color(255, 255, 255));
         register.setText("REGISTER");
@@ -351,44 +363,35 @@ public class Signup extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_loginMouseClicked
 
-    private void viewpassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewpassActionPerformed
-        if(viewpass.isSelected()){
-            ps.setEchoChar((char)0);
-        }else{
-            ps.setEchoChar('\u25CF');
-        }
-
-    }//GEN-LAST:event_viewpassActionPerformed
-
     private void maleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maleActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_maleActionPerformed
 
     private void registerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerMouseClicked
-        if(nm.getText().isEmpty() || em.getText().isEmpty() || cn.getText().isEmpty() 
-            || us.getText().isEmpty() || ps.getText().isEmpty()){
-            JOptionPane.showMessageDialog(null, "All fields are required!"); 
-        } else if (ps.getText().length() < 8){
+        if (nm.getText().isEmpty() || em.getText().isEmpty() || cn.getText().isEmpty()
+                || us.getText().isEmpty() || ps.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "All fields are required!");
+        } else if (ps.getText().length() < 8) {
             JOptionPane.showMessageDialog(null, "Password should have 8 characters and above!");
             ps.setText("");
-        } else if (!isValidContact(cn.getText())){
+        } else if (!isValidContact(cn.getText())) {
             JOptionPane.showMessageDialog(null, "Invalid contact number! \t Contact number must start with \"09\" followed by 9 digits.");
             cn.setText("");
         } else if (!(em.getText().matches("^[a-zA-Z0-9_%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))) {
             JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
             em.setText("");
-        } else if (duplicateChecker()){
-            System.out.println("Duplicate Exist!");   
+        } else if (duplicateChecker()) {
+            System.out.println("Duplicate Exist!");
         } else {
             dbconfig dbc = new dbconfig();
 
-            try{
+            try {
                 String pass = passHash.hashPassword(ps.getText());
                 String sex = "";
 
                 if (male.isSelected()) {
                     sex = "Male";
-                }else if (fem.isSelected()) {
+                } else if (fem.isSelected()) {
                     sex = "Female";
                 }
 
@@ -404,9 +407,19 @@ public class Signup extends javax.swing.JFrame {
                     }
                 }
 
-                if(dbc.insertData("INSERT INTO tbl_users (u_name, u_email, u_contact, u_username, u_pass, u_gender, u_type, u_status, u_image)"
-                    + " VALUES('"+nm.getText()+"', '"+em.getText()+"', '"+cn.getText()+"', '"+us.getText()+"', "
-                    + "'"+pass+"', '"+sex+"', '"+ty.getSelectedItem()+"','Pending', '"+destination+"')")) {
+                String userType = (String) ty.getSelectedItem();
+                boolean insertSuccess = false;
+                if ("Patient".equalsIgnoreCase(userType)) {
+                    insertSuccess = dbc.insertData("INSERT INTO customer (u_name, u_email, u_contact, u_username, u_pass, u_gender, u_type, u_status, u_image)"
+                            + " VALUES('" + nm.getText() + "', '" + em.getText() + "', '" + cn.getText() + "', '" + us.getText() + "', "
+                            + "'" + pass + "', '" + sex + "', '" + userType + "','Pending', '" + destination + "')");
+                } else if ("Pharmacist".equalsIgnoreCase(userType) || "Admin".equalsIgnoreCase(userType)) {
+                    insertSuccess = dbc.insertData("INSERT INTO admin_staff (a_name, a_email, a_contact, a_username, a_pass, a_gender, a_type, a_status, a_image)"
+                            + " VALUES('" + nm.getText() + "', '" + em.getText() + "', '" + cn.getText() + "', '" + us.getText() + "', "
+                            + "'" + pass + "', '" + sex + "', '" + userType + "','Pending', '" + destination + "')");
+                }
+
+                if (insertSuccess) {
                     JOptionPane.showMessageDialog(null, "Registered Successfully!");
                     Loginfrm log = new Loginfrm();
                     log.setVisible(true);
@@ -414,8 +427,8 @@ public class Signup extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(null, "Connection Error!");
                 }
-            } catch(NoSuchAlgorithmException ex){
-                System.out.println(""+ex);
+            } catch (NoSuchAlgorithmException ex) {
+                System.out.println("Password Hash Error: " + ex.getMessage());
             }
 
         }
@@ -512,7 +525,6 @@ public class Signup extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> ty;
     private javax.swing.JButton up;
     private javax.swing.JTextField us;
-    private javax.swing.JCheckBox viewpass;
     // End of variables declaration//GEN-END:variables
 
     void SetVisible(boolean b) {
